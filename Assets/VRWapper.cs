@@ -19,6 +19,13 @@ public class VRWapper : MonoBehaviour {
 	[SerializeField]
 	private GameObject test;
 
+	[SerializeField]
+	private GameObject navTest;
+
+	[SerializeField]
+	private Vector3 debug1;
+	[SerializeField]
+	private Vector3 debug2;
 
 	NavMeshAgent agent;
 	BoxCollider box;
@@ -52,14 +59,31 @@ public class VRWapper : MonoBehaviour {
             target.transform.localScale = new Vector3(distance, distance, distance);
 
 
+			debug1 = hit.point;
+
 			Collider[] cs = Physics.OverlapBox (hit.point + offset, box.size);
 			NavMeshPath path = new NavMeshPath ();
 			agent.CalculatePath (target.transform.position, path);
 
-			float tmpAngle = Vector3.Angle(hit.normal, Vector3.up);
+			NavMeshHit navHit;
+			bool nearest = NavMesh.SamplePosition (hit.point, out navHit, 1.0f, NavMesh.AllAreas);
+			navTest.SetActive (false);
+			if (nearest) {
+				navTest.transform.position = navHit.position;
+				Ray navRay = new Ray (navHit.position, Camera.main.transform.position - navHit.position);
 
-			bool canReach = path.status == NavMeshPathStatus.PathComplete && cs.Length == 0 && tmpAngle < 90;
-				
+				debug2 = navHit.position;
+
+				if (Physics.Raycast (navRay, out hit)) {
+					float tmpD = Vector3.Distance (Camera.main.transform.position, navHit.position);
+					nearest = hit.distance > tmpD;
+				}
+			}
+
+
+
+			bool canReach = path.status == NavMeshPathStatus.PathComplete && cs.Length == 0 && nearest && debug1.x == debug2.x && debug1.z == debug2.z;
+
 
 
 			can.SetActive(canReach);
