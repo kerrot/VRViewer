@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 
-public class VRWapper : MonoBehaviour {
+public class VRWarpper : MonoBehaviour {
     [SerializeField]
     private float x;
     [SerializeField]
@@ -37,6 +37,7 @@ public class VRWapper : MonoBehaviour {
 		agent = test.GetComponent<NavMeshAgent> ();
 		box = test.GetComponent<BoxCollider> ();
 		rc = GetComponent<VRRayCast> ();
+		test.SetActive (false);
 	}
 	
 	// Update is called once per frame
@@ -60,11 +61,12 @@ public class VRWapper : MonoBehaviour {
 
 			debug1 = hit.point;
 
-			Collider[] cs = Physics.OverlapBox (hit.point + offset, box.size);
+
+			test.SetActive (true);
 			NavMeshPath path = new NavMeshPath ();
 			agent.CalculatePath (target.transform.position, path);
-
-			NavMeshHit navHit;
+			test.SetActive (false);
+			/*NavMeshHit navHit;
 			bool nearest = NavMesh.SamplePosition (hit.point, out navHit, 1.0f, NavMesh.AllAreas);
 			navTest.SetActive (false);
 			if (nearest) {
@@ -77,9 +79,22 @@ public class VRWapper : MonoBehaviour {
 					float tmpD = Vector3.Distance (Camera.main.transform.position, navHit.position);
 					nearest = hit.distance > tmpD;
 				}
+			}*/
+
+			Collider[] cs;
+
+			RaycastHit floorHit;
+			float angle = Vector3.Angle (Vector3.up, hit.normal);
+			bool floor = angle < 90;
+			if (angle == 90 && Physics.Raycast (hit.point, Vector3.down, out floorHit)) {
+				floor = floorHit.distance < 0.5f;
+				cs = Physics.OverlapBox (floorHit.point + offset, box.size);
+			} 
+			else {
+				cs = Physics.OverlapBox (hit.point + offset, box.size);
 			}
-				
-			bool canReach = path.status == NavMeshPathStatus.PathComplete && cs.Length == 0 && nearest && debug1.x == debug2.x && debug1.z == debug2.z;
+
+			bool canReach = path.status == NavMeshPathStatus.PathComplete && cs.Length == 0 && floor; // && nearest && debug1.x == debug2.x && debug1.z == debug2.z;
 
 			can.SetActive(canReach);
 			cannot.SetActive(!canReach);
