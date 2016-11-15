@@ -30,26 +30,25 @@ public class VRWapper : MonoBehaviour {
 	NavMeshAgent agent;
 	BoxCollider box;
 
+	VRRayCast rc;
+
 	// Use this for initialization
 	void Start () {
 		agent = test.GetComponent<NavMeshAgent> ();
 		box = test.GetComponent<BoxCollider> ();
+		rc = GetComponent<VRRayCast> ();
 	}
 	
 	// Update is called once per frame
 	void Update () {
         y += Input.GetAxis("Horizontal");
         x += Input.GetAxis("Vertical");
-
-        Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
-
-        Camera.main.transform.rotation = Quaternion.Euler(x, y, 0);
-
-        RaycastHit hit;
+		Camera.main.transform.rotation = Quaternion.Euler(x, y, 0);
 
         target.SetActive(false);
 
-        if (Physics.Raycast(ray, out hit))
+		RaycastHit hit;
+		if (rc.Raycast(out hit))
         {
             target.SetActive(true);
 
@@ -79,12 +78,8 @@ public class VRWapper : MonoBehaviour {
 					nearest = hit.distance > tmpD;
 				}
 			}
-
-
-
+				
 			bool canReach = path.status == NavMeshPathStatus.PathComplete && cs.Length == 0 && nearest && debug1.x == debug2.x && debug1.z == debug2.z;
-
-
 
 			can.SetActive(canReach);
 			cannot.SetActive(!canReach);
