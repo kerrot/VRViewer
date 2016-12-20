@@ -1,4 +1,4 @@
-﻿//======= Copyright (c) Valve Corporation, All rights reserved. ===============
+﻿//========= Copyright 2015, Valve Corporation, All rights reserved. ===========
 //
 // Purpose: Prompt developers to use settings most compatible with SteamVR.
 //

@@ -1,4 +1,4 @@
-﻿//======= Copyright (c) Valve Corporation, All rights reserved. ===============
+﻿//========= Copyright 2015, Valve Corporation, All rights reserved. ===========
 //
 // Purpose: Helper for smoothing over transitions between levels.
 //
@@ -25,11 +25,14 @@ public class SteamVR_LoadLevel : MonoBehaviour
 	// Name of level to load.
 	public string levelName;
 
-	// Name of internal process to launch (instead of levelName).
-	public string internalProcessPath;
+	// If loading an external application
+	public bool loadExternalApp;
 
-	// The command-line args for the internal process to launch.
-	public string internalProcessArgs;
+	// Name of external application to load
+	public string externalAppPath;
+
+	// The command-line args for the external application to load
+	public string externalAppArgs;
 
 	// If true, call LoadLevelAdditiveAsync instead of LoadLevelAsync.
 	public bool loadAdditive;
@@ -329,7 +332,7 @@ public class SteamVR_LoadLevel : MonoBehaviour
 		transform.parent = null;
 		DontDestroyOnLoad(gameObject);
 
-		if (!string.IsNullOrEmpty(internalProcessPath))
+		if (loadExternalApp)
 		{
 			Debug.Log("Launching external application...");
 			var applications = OpenVR.Applications;
@@ -340,13 +343,13 @@ public class SteamVR_LoadLevel : MonoBehaviour
 			else
 			{
 				var workingDirectory = Directory.GetCurrentDirectory();
-				var fullPath = Path.Combine(workingDirectory, internalProcessPath);
+				var fullPath = Path.Combine( workingDirectory, externalAppPath );
 				Debug.Log("LaunchingInternalProcess");
-				Debug.Log("ExternalAppPath = " + internalProcessPath);
+				Debug.Log("ExternalAppPath = " + externalAppPath);
 				Debug.Log("FullPath = " + fullPath);
-				Debug.Log("ExternalAppArgs = " + internalProcessArgs);
+				Debug.Log("ExternalAppArgs = " + externalAppArgs);
 				Debug.Log("WorkingDirectory = " + workingDirectory);
-				var error = applications.LaunchInternalProcess(fullPath, internalProcessArgs, workingDirectory);
+				var error = applications.LaunchInternalProcess(fullPath, externalAppArgs, workingDirectory);
 				Debug.Log("LaunchInternalProcessError: " + error);
 #if UNITY_EDITOR
 				UnityEditor.EditorApplication.isPlaying = false;

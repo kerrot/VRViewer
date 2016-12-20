@@ -1,11 +1,10 @@
-﻿//======= Copyright (c) Valve Corporation, All rights reserved. ===============
+﻿//========= Copyright 2014, Valve Corporation, All rights reserved. ===========
 //
 // Purpose: Handles rendering to the game view window
 //
 //=============================================================================
 
 using UnityEngine;
-using Valve.VR;
 
 [RequireComponent(typeof(Camera))]
 public class SteamVR_GameView : MonoBehaviour
@@ -15,30 +14,12 @@ public class SteamVR_GameView : MonoBehaviour
 	public bool drawOverlay = true;
 
 	static Material overlayMaterial;
-	static Texture2D mirrorTexture;
 
 	void OnEnable()
 	{
 		if (overlayMaterial == null)
 		{
 			overlayMaterial = new Material(Shader.Find("Custom/SteamVR_Overlay"));
-		}
-
-		// Use OpenVR's mirror texture if available.
-		if (mirrorTexture == null)
-		{
-			var vr = SteamVR.instance;
-			if (vr != null && vr.graphicsAPI == EGraphicsAPIConvention.API_DirectX)
-            {
-				var tex = new Texture2D(2, 2);
-				var nativeTex = System.IntPtr.Zero;
-				if (vr.compositor.GetMirrorTextureD3D11(EVREye.Eye_Right, tex.GetNativeTexturePtr(), ref nativeTex) == EVRCompositorError.None)
-				{
-					uint width = 0, height = 0;
-					OpenVR.System.GetRecommendedRenderTargetSize(ref width, ref height);
-					mirrorTexture = Texture2D.CreateExternalTexture((int)width, (int)height, TextureFormat.RGBA32, false, false, nativeTex);
-				}
-			}
 		}
 	}
 
@@ -54,11 +35,7 @@ public class SteamVR_GameView : MonoBehaviour
 		var y1 = -aspect;
 
 		var blitMaterial = SteamVR_Camera.blitMaterial;
-
-		if (mirrorTexture != null)
-			blitMaterial.mainTexture = mirrorTexture;
-		else
-			blitMaterial.mainTexture = SteamVR_Camera.GetSceneTexture(camera.hdr);
+		blitMaterial.mainTexture = SteamVR_Camera.GetSceneTexture(camera.hdr);
 
 		GL.PushMatrix();
 		GL.LoadOrtho();

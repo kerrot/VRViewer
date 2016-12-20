@@ -27,6 +27,13 @@ public class VRWarpper : MonoBehaviour {
 	[SerializeField]
 	private Vector3 debug2;
 
+    [SerializeField]
+    private Camera VRCamera;
+    [SerializeField]
+    private GameObject VRChara;
+    [SerializeField]
+    private GameObject VRTracker;
+
 	NavMeshAgent agent;
 	BoxCollider box;
 
@@ -44,7 +51,7 @@ public class VRWarpper : MonoBehaviour {
 	void Update () {
         y += Input.GetAxis("Horizontal");
         x += Input.GetAxis("Vertical");
-		Camera.main.transform.rotation = Quaternion.Euler(x, y, 0);
+        VRCamera.transform.rotation = Quaternion.Euler(x, y, 0);
 
         target.SetActive(false);
 
@@ -55,7 +62,7 @@ public class VRWarpper : MonoBehaviour {
 
             target.transform.position = hit.point;
 
-            float distance = Vector3.Distance(Camera.main.transform.position, hit.point) / 30;
+            float distance = Vector3.Distance(VRCamera.transform.position, hit.point) / 30;
             target.transform.localScale = new Vector3(distance, distance, distance);
 
 
@@ -99,9 +106,25 @@ public class VRWarpper : MonoBehaviour {
 			can.SetActive(canReach);
 			cannot.SetActive(!canReach);
 
-			if (canReach && Input.GetMouseButtonUp(1))
+            if (VRTracker)
             {
-				Camera.main.transform.position = target.transform.position + offset;
+                SteamVR_TrackedObject trackedObject = VRTracker.GetComponent<SteamVR_TrackedObject>();
+                if (trackedObject)
+                {
+                    var device = SteamVR_Controller.Input((int)trackedObject.index);
+
+                    if (canReach && device.GetTouchDown(SteamVR_Controller.ButtonMask.Trigger))
+                    {
+                        VRChara.transform.position = target.transform.position + offset;
+                    }
+                }
+            }
+            else
+            {
+                if (canReach && Input.GetMouseButtonDown(1))
+                {
+                    VRChara.transform.position = target.transform.position + offset;
+                }
             }
         } 
 	}

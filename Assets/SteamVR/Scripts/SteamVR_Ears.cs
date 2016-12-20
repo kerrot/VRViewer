@@ -1,4 +1,4 @@
-﻿//======= Copyright (c) Valve Corporation, All rights reserved. ===============
+﻿//========= Copyright 2016, Valve Corporation, All rights reserved. ===========
 //
 // Purpose: Handles aligning audio listener when using speakers.
 //

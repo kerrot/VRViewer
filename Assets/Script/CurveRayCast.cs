@@ -10,6 +10,9 @@ public class CurveRayCast : VRRayCast {
 	private float divAngle;
 	[SerializeField]
 	private float rate;
+    [SerializeField]
+    private GameObject rayObject;
+
 
 	LineDrawControl lines;
 	int counter;
@@ -21,8 +24,23 @@ public class CurveRayCast : VRRayCast {
 
 	void Update()
 	{
-		float v = Input.mouseScrollDelta.y * rate;
-		divAngle += v;
+        SteamVR_TrackedObject trackedObject = rayObject.GetComponent<SteamVR_TrackedObject>();
+        if (trackedObject)
+        {
+            var device = SteamVR_Controller.Input((int)trackedObject.index);
+
+            Vector2 position = device.GetAxis();
+            if (device.GetPressDown(SteamVR_Controller.ButtonMask.Touchpad))
+            {
+                divAngle += position.x * rate;
+                divLength += position.y;   
+            }
+        }
+        else
+        {
+            float v = Input.mouseScrollDelta.y * rate;
+            divAngle += v;
+        }
 
 		if (divAngle < 0) {
 			divAngle = 0f;
@@ -37,8 +55,8 @@ public class CurveRayCast : VRRayCast {
 
 		if (divLength > 0)
 		{
-			Vector3 pos = Camera.main.transform.position;
-			Vector3 dir = Camera.main.transform.forward;
+            Vector3 pos = rayObject.transform.position;
+            Vector3 dir = rayObject.transform.forward;
 
 
 			Vector3 check = pos + dir;

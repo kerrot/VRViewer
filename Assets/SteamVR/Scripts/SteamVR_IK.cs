@@ -1,4 +1,4 @@
-﻿//======= Copyright (c) Valve Corporation, All rights reserved. ===============
+﻿//========= Copyright 2015, Valve Corporation, All rights reserved. ===========
 //
 // Purpose: Simple two bone ik solver.
 //
